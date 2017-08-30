@@ -32,10 +32,17 @@ router.route('/:studentId')
 	// update student info
 	.put((req, res, next) => {
 		Student.update(
-			{ name: req.body.name },
-			{ where: {id: req.params.studentId}}
+			{name: req.body.name,
+				email: req.body.email,
+				campusId: req.body.campusId},
+			{ where: {id: req.params.studentId}},
+			{ returning: true}
 		)
-			.then((student) => res.status(201).send(student))
+			.then(() => Student.findById(req.params.studentId))
+			.then(student => {
+				console.log(student);
+				res.status(201).send(student)
+			})
 			.catch(next)
 	})
 

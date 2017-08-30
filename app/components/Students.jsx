@@ -17,7 +17,7 @@ export function Students(props) {
             {student.name}
             </NavLink>
             <span>{student.campus.name}</span>
-          <button onClick={(e)=>{props.handleClick(e,student)}}>X</button>
+            <button onClick={(e)=>{props.handleClick(e,student)}}>X</button>
           </span>
         )
       })}

@@ -35,10 +35,15 @@ router.route('/:campusId')
 	// update campus info
 	.put((req, res, next) => {
 		Campus.update(
-			{ name: req.body.name },
-			{ where: {id: req.params.campusId}}
+			{name: req.body.name,
+				image: req.body.image},
+			{ where: {id: req.params.campusId}},
+			{ returning: true}
 		)
-			.then((campus) => res.status(201).send(campus))
+			.then(() => Campus.findById(req.params.campusId))
+			.then(campus => {
+				res.status(201).send(campus)
+			})
 			.catch(next)
 	})
 

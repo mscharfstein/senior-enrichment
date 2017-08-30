@@ -21,6 +21,8 @@ const ADD_STUDENT = 'ADD_STUDENT';
 const ADD_CAMPUS = 'ADD_CAMPUS';
 const CHOOSE_CAMPUS = 'CHOOSE_CAMPUS';
 const CHOOSE_STUDENT = 'CHOOSE_STUDENT';
+const UPDATE_STUDENT = 'UPDATE_STUDENT';
+const UPDATE_CAMPUS = 'UPDATE_CAMPUS';
 
 // ACTION CREATORS
 export function getStudents (students) {
@@ -33,13 +35,13 @@ export function getCampuses (campuses) {
   return action;
 }
 
-export function dropStudent (student) {
-  const action = { type: DELETE_STUDENT, student };
+export function dropStudent (studentId) {
+  const action = { type: DELETE_STUDENT, studentId };
   return action;
 }
 
-export function dropCampus (campus) {
-  const action = { type: DELETE_CAMPUS, campus };
+export function dropCampus (campusId) {
+  const action = { type: DELETE_CAMPUS, campusId };
   return action;
 }
 
@@ -60,6 +62,16 @@ export function chooseCampus (campus) {
 
 export function chooseStudent (student) {
   const action = { type: CHOOSE_STUDENT, student };
+  return action;
+}
+
+export function updateStudent (student) {
+  const action = { type: UPDATE_STUDENT, student };
+  return action;
+}
+
+export function updateCampus (campus) {
+  const action = { type: UPDATE_CAMPUS, campus };
   return action;
 }
 
@@ -88,12 +100,12 @@ export function fetchCampuses () {
   }
 }
 
-export function deleteCampus (campus,history) {
+export function deleteCampus (campusId,history) {
 
   return function thunk (dispatch) {
-    return axios.delete(`/api/campuses/${campus.id}`)
+    return axios.delete(`/api/campuses/${campusId}`)
       .then(() => {
-        const action = dropCampus(campus);
+        const action = dropCampus(campusId);
         dispatch(action);
         history.push('/campuses')
 
@@ -101,12 +113,12 @@ export function deleteCampus (campus,history) {
   }
 }
 
-export function deleteStudent (student,history) {
+export function deleteStudent (studentId,history) {
 
   return function thunk (dispatch) {
-    return axios.delete(`/api/students/${student.id}`)
+    return axios.delete(`/api/students/${studentId}`)
       .then(() => {
-        const action = dropStudent(student);
+        const action = dropStudent(studentId);
         dispatch(action);
         history.push('/students')
       })
@@ -138,6 +150,30 @@ export function postCampus (campus, history) {
   }
 }
 
+export function reviseStudent (student) {
+  return function thunk (dispatch) {
+    return axios.put(`/api/students/${student.id}`, student)
+      .then(res => res.data)
+      .then(student => {
+        dispatch(updateStudent(student));
+        dispatch(chooseStudent(student));
+        dispatch(chooseCampus(student.campus));
+      });
+  }
+}
+
+export function reviseCampus (campus) {
+  return function thunk (dispatch) {
+    return axios.put(`/api/campuses/${campus.id}`, campus)
+      .then(res => res.data)
+      .then(campus => {
+        dispatch(updateCampus(campus));
+        dispatch(chooseCampus(campus));
+      });
+  }
+}
+
+
 const rootReducer = function(state = initialState, action) {
   switch(action.type) {
     case GET_STUDENTS:
@@ -147,11 +183,11 @@ const rootReducer = function(state = initialState, action) {
       return Object.assign({},state,{campuses: action.campuses})
 
     case DELETE_STUDENT:
-      const newStudentsArray = state.students.filter(student=>student.id!==action.student.id);
+      const newStudentsArray = state.students.filter(student=>student.id!==action.studentId);
       return Object.assign({},state,{students:newStudentsArray})
 
     case DELETE_CAMPUS:
-      const newCampusesArray = state.campuses.filter(campus=>campus.id!==action.campus.id);
+      const newCampusesArray = state.campuses.filter(campus=>campus.id!==action.campusId);
       return Object.assign({},state,{campuses:newCampusesArray})
 
     case ADD_STUDENT:
@@ -169,6 +205,16 @@ const rootReducer = function(state = initialState, action) {
     case CHOOSE_STUDENT:
       return Object.assign({},state,
         {selectedStudent: action.student})
+
+    case UPDATE_STUDENT:
+      const newStudentArray = state.students.filter(student=>action.student.id!==student.id);
+      return Object.assign({},state,
+        {students: newStudentArray.concat(action.student)})
+
+    case UPDATE_CAMPUS:
+      const newCampusArray = state.campuses.filter(campus=>action.campus.id!==campus.id);
+      return Object.assign({},state,
+        {campuses: newCampusArray.concat(action.campus)})
 
     default:
       return state
