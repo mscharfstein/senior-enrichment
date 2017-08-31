@@ -11,7 +11,7 @@ export class NewCampusForm extends Component {
       image: ''
     }
     this.handleChangeName = this.handleChangeName.bind(this);
-    this.handleChangeURL = this.handleChangeURL.bind(this);
+    this.handleChangeImage = this.handleChangeImage.bind(this);
   }
 
   render () {
@@ -31,12 +31,11 @@ export class NewCampusForm extends Component {
               </div>
             </div>
             <div className="form-group">
-              <label className="col-xs-2 control-label">Image URL</label>
+              <label className="col-xs-2 control-label">Image File Name</label>
               <div className="col-xs-10">
                 <input
                   className="form-control"
-                  type="url"
-                  onChange={this.handleChangeURL}
+                  onChange={this.handleChangeImage}
                 />
               </div>
             </div>
@@ -45,6 +44,7 @@ export class NewCampusForm extends Component {
                 <button
                   type="submit"
                   className="btn btn-success"
+                  disabled={this.state.name.length ? false : true}
                   >
                   Add Campus
                   </button>
@@ -60,7 +60,7 @@ export class NewCampusForm extends Component {
     this.setState({name:e.target.value});
   }
 
-  handleChangeURL (e) {
+  handleChangeImage (e) {
     this.setState({image:e.target.value});
   }
 
@@ -68,7 +68,7 @@ export class NewCampusForm extends Component {
 
 const mapStateToProps = function(state) {
   return {
-    newCampusEntry: state.newCampusEntry
+    campuses: state.campuses
   }
 }
 

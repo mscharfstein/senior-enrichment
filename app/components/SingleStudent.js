@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { chooseCampus, reviseStudent, deleteStudent } from '../reducers';
 import ContentEditable from 'react-contenteditable';
-
+import axios from 'axios';
 
 export class SingleStudent extends Component {
 
@@ -11,16 +11,31 @@ export class SingleStudent extends Component {
     super(props);
     this.state = {
       beingEdited: false,
-      id: this.props.selectedStudent.id,
-      name: this.props.selectedStudent.name,
-      email: this.props.selectedStudent.email,
-      campusId: this.props.selectedStudent.campus.id
+      id: '',
+      name: '',
+      email: '',
+      campus: {name:'',id:''},
+      campusId: '',
+      selectedStudent: {campus:{name:''}}
     }
     this.toggleEdit = this.toggleEdit.bind(this)
     this.updateName = this.updateName.bind(this)
     this.updateEmail = this.updateEmail.bind(this)
     this.updateCampus = this.updateCampus.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
+  }
+
+  componentDidMount() {
+    const studentId = this.props.getStudentId()
+
+    axios.get(`/api/students/${studentId}`)
+      .then(res=>res.data)
+      .then(student=>{
+        this.setState({name: student.name, id: student.id, email: student.email, campus: student.campus, selectedStudent: student, campusId: student.campus.id})
+      })
+      .catch(() => {
+        throw new Error("problem getting student")
+      })
   }
 
   render() {
@@ -33,19 +48,24 @@ export class SingleStudent extends Component {
               value={this.state.name}
               onChange={this.updateName}>
             </input> :
-            this.props.selectedStudent.name}
+            this.state.name}
         </h3>
-        <div>Email:
+        <div>
+          <h4>Email: <small>
         {this.state.beingEdited ?
             <input
               value={this.state.email}
               onChange={this.updateEmail}>
             </input> :
-            this.props.selectedStudent.email}
-
+            this.state.email}
+            </small>
+        </h4>
         </div>
-        <div>Campus:
+        <div>
+        <h4>Campus:
+        <small>
         {this.state.beingEdited ?
+          <form className="form-inline">
             <select className="form-control" name="campus"
             value={this.state.campusId}
             onChange={this.updateCampus}>
@@ -56,32 +76,34 @@ export class SingleStudent extends Component {
                 )
               })}
             </select>
+            </form>
             :
 
             <NavLink
-              to={`/campuses/${this.props.selectedCampus.id}`}
-              onClick={(e) => { this.props.handleClick(e, this.props.selectedCampus) }}>  {this.props.selectedCampus.name}
+              to={`/campuses/${this.state.campusId}`}>  {this.state.campus.name}
             </NavLink>}
+            </small>
+</h4>
         </div>
         <div>
 
         {this.state.beingEdited ?
           <div><button
             type="submit"
-            className="btn"
+            className="btn btn-default"
             onClick={this.handleSubmit}
           >Submit
           </button>
           <button
             type="delete"
-            className="btn"
+            className="btn btn-default"
             onClick={(e)=>this.props.handleDelete(e,this.state.id)}
           >Delete
           </button>
           </div> :
           <div><button
             type="edit"
-            className="btn"
+            className="btn btn-default"
             onClick={this.toggleEdit}
           >Edit
           </button>
@@ -96,6 +118,7 @@ export class SingleStudent extends Component {
   }
 
   handleSubmit(e) {
+    console.log('this is the state on submit', this.state)
     this.props.updateOnSubmit(e, this.state);
     this.setState({ beingEdited: false })
   }
@@ -109,14 +132,13 @@ export class SingleStudent extends Component {
   }
 
   updateCampus(e) {
-    this.setState({ campusId: e.target.value })
+    const campus = this.props.campuses.filter(campus => +campus.id===+e.target.value)
+    this.setState({ campus: campus[0], campusId: campus[0].id })
   }
 }
 
 const mapStateToProps = function (state) {
   return {
-    selectedStudent: state.selectedStudent,
-    selectedCampus: state.selectedCampus,
     campuses: state.campuses,
     students: state.students
   }
@@ -124,15 +146,15 @@ const mapStateToProps = function (state) {
 
 const mapDispatchToProps = function (dispatch, ownProps) {
   return {
-    handleClick: function (evt, campus) {
-      const action = chooseCampus(campus);
-      dispatch(action);
-    },
     updateOnSubmit: function (evt, state) {
+      console.log('state on updating', state)
       dispatch(reviseStudent(state));
     },
     handleDelete: function(evt, studentId) {
       dispatch(deleteStudent(studentId, ownProps.history));
+    },
+    getStudentId: function() {
+      return ownProps.match.params.studentid;
     }
   }
 }

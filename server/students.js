@@ -40,7 +40,6 @@ router.route('/:studentId')
 		)
 			.then(() => Student.findById(req.params.studentId))
 			.then(student => {
-				console.log(student);
 				res.status(201).send(student)
 			})
 			.catch(next)

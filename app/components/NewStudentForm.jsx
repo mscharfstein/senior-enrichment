@@ -59,6 +59,9 @@ export class NewStudentForm extends Component {
                 <button
                   type="submit"
                   className="btn btn-success"
+                  disabled = {
+                    this.state.name.length && this.state.campusId.length ? false : true
+                  }
                   >
                   Add Student
                   </button>

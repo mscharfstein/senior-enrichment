@@ -3,7 +3,8 @@ const Sequelize = require('sequelize')
 const db = require('../index.js')
 const Campus = require('./campus');
 
-module.exports = db.define('student', {
+
+const Student = db.define('student', {
   name: {
     type: Sequelize.STRING,
     allowNull: false
@@ -19,3 +20,5 @@ module.exports = db.define('student', {
     include: [{model: Campus}]
   }
 })
+
+module.exports = Student;

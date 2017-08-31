@@ -1,72 +1,101 @@
 import React, { Component } from 'react';
 import { NavLink } from 'react-router-dom';
-import {connect} from 'react-redux';
-import {chooseStudent, chooseCampus, deleteCampus, reviseCampus} from '../reducers';
+import { connect } from 'react-redux';
+import { chooseStudent, chooseCampus, deleteCampus, reviseCampus } from '../reducers';
+import axios from 'axios';
 
 export class SingleCampus extends Component {
   // load the students for a given campus
   constructor(props) {
     super(props);
+
     this.state = {
       beingEdited: false,
-      id: this.props.selectedCampus.id,
-      name: this.props.selectedCampus.name,
-      image: this.props.selectedCampus.image
+      selectedCampus: {},
+      id: '',
+      name: '',
+      image: 'Enter Image Name',
+      relevantStudents: []
     }
+
     this.toggleEdit = this.toggleEdit.bind(this)
     this.updateName = this.updateName.bind(this)
     this.updateImage = this.updateImage.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
+    this.renderStudents = this.renderStudents.bind(this)
   }
 
-  render () {
+  componentDidMount() {
+    console.log("in component did mount")
+    const campusId = this.props.getCampusId()
+
+    axios.get(`/api/campuses/${campusId}`)
+      .then(res => res.data)
+      .then(campus => {
+        this.setState({ selectedCampus: campus, name: campus.name, id: campus.id, image: campus.image })
+      })
+      .catch(() => {
+        throw new Error("problem getting campus")
+      })
+
+    axios.get(`/api/campuses/${campusId}/students`)
+      .then(res => res.data)
+      .then(students => {
+        console.log('printing students', students)
+        this.setState({ relevantStudents: students })
+      })
+      .catch(() => {
+        throw new Error("problem getting students")
+      })
+
+  }
+
+  render() {
+
     return (
       <div>
-      <h3>
-      {this.state.beingEdited ?
+        <h2 className="text-center">
+          {this.state.beingEdited ?
             <input
               value={this.state.name}
               onChange={this.updateName}>
             </input> :
-            this.props.selectedCampus.name}
-            Campus</h3>
-      <div>Students:
-      {this.props.students.map((student, idx)=> {
-        return (
-          <div key={student.id}>
-            <span>{1+idx}-</span>
-            <NavLink
-            to={`/students/${student.id}`}
-            onClick={(e)=>this.props.handleClick(e,student)}
-            >
-            {student.name}
-            </NavLink>
-          </div>
-        )
-      })}
-      </div>
+            this.state.name}
+        </h2>
+        <div className="text-center">
+          {this.state.beingEdited ?
+            <input
+              value={this.state.image}
+              onChange={this.updateImage}>
+            </input> :
+            <img src={`/${this.state.image}`} />}
+        </div>
+        <div className="px-2">
+          <h3> Students: </h3>
+          <div> {this.renderStudents(this.state.relevantStudents)} </div>
+        </div>
 
-      {this.state.beingEdited ?
-        <div><button
-          type="submit"
-          className="btn"
-          onClick={this.handleSubmit}
-        >Submit
+        {this.state.beingEdited ?
+          <div><button
+            type="submit"
+            className="btn btn-default"
+            onClick={this.handleSubmit}
+          >Submit
         </button>
-        <button
-          type="delete"
-          className="btn"
-          onClick={(e)=>this.props.handleDelete(e,this.state.id)}
-        >Delete
+            <button
+              type="delete"
+              className="btn btn-default"
+              onClick={(e) => this.props.handleDelete(e, this.state.id)}
+            >Delete Campus
         </button>
-        </div> :
-        <div><button
-          type="edit"
-          className="btn"
-          onClick={this.toggleEdit}
-        >Edit
+          </div> :
+          <div><button
+            type="edit"
+            className="btn btn-default"
+            onClick={this.toggleEdit}
+          >Edit
         </button>
-      </div>}
+          </div>}
       </div>
     );
   }
@@ -87,30 +116,70 @@ export class SingleCampus extends Component {
   updateImage(e) {
     this.setState({ image: e.target.value })
   }
-}
 
-const mapStateToProps = function(state) {
-  return {
-    selectedCampus: state.selectedCampus,
-    students: state.students.filter(student=>student.campusId===state.selectedCampus.id),
-    selectedStudent: state.selectedStudent,
-    campuses: state.campuses
+  renderStudents(students) {
+    return (
+      <div className="studentBox">
+        <table className="table table-condensed">
+          <thead>
+            <tr >
+              <th className="text-center">
+                <h3>#</h3>
+              </th>
+              <th className="text-center">
+                <h3>Name</h3>
+              </th>
+              <th className="text-center">
+                <h3>Email</h3>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {students.map((student, idx) => {
+              return (
+                <tr key={student.id}>
+                  <td className="text-center">
+                    <h4>{1 + idx}</h4>
+                  </td>
+                  <td className="text-center">
+                    <NavLink to={`/students/${student.id}`}
+                    >
+                      <h4>{student.name}</h4>
+                    </NavLink>
+
+                  </td>
+                  <td className="text-center">
+                    <h4>{student.email}</h4>
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+    )
   }
 }
 
-const mapDispatchToProps = function(dispatch,ownProps) {
+const mapStateToProps = function (state) {
   return {
-    handleClick: function(e,student) {
-      dispatch(chooseStudent(student));
-      dispatch(chooseCampus(student.campus));
-    },
+    campuses: state.campuses,
+    students: state.students,
+  }
+}
+
+const mapDispatchToProps = function (dispatch, ownProps) {
+
+  return {
     updateOnSubmit: function (evt, state) {
       dispatch(reviseCampus(state));
     },
-    handleDelete: function(e,campusId) {
-      dispatch(deleteCampus(campusId,ownProps.history));
+    handleDelete: function (e, campusId) {
+      dispatch(deleteCampus(campusId, ownProps.history));
+    },
+    getCampusId: function () {
+      return ownProps.match.params.campusid;
     }
-
   }
 }
 

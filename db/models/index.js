@@ -9,10 +9,9 @@ const Student = require('./student');
 const Campus = require('./campus');
 
 Student.belongsTo(Campus);
-Campus.hasMany(Student, {
-	foreignKey: 'campusId',
-	onDelete: 'cascade',
-  hooks: true
+Campus.hasMany(Student,{
+  onDelete: 'cascade', // remove all associated stories
+  hooks: true // makes the cascade actually work. Yay Sequelize!
 });
 
 module.exports = {Student, Campus}

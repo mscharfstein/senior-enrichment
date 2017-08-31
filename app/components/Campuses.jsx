@@ -1,51 +1,68 @@
 import React, { Component } from 'react';
 import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
-import {chooseCampus} from '../reducers';
+import { chooseCampus } from '../reducers';
 
-export function Campuses(props) {
+export class Campuses extends Component {
   // loop through all of the campuses and call campus component for each
+  constructor(props) {
+    super(props);
+    this.renderAddCampusButton = this.renderAddCampusButton.bind(this);
+    this.renderRow = this.renderRow.bind(this);
+  }
 
-  return (
-    <div>
-      {props.campuses.map(campus=> {
+  render() {
+    console.log('props when i go back to campuses', this.props);
+    return (
+      <div>
+        <div className="p10">
+        {this.renderAddCampusButton()}
+        </div>
+        <div className="container">
+          {this.props.campuses.map(campus => {
+            return (
+              <div key={campus.id}>
+                {this.renderRow(campus)}
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    );
+  }
 
-        return (
-          <div className='col-md-6' className="campusBox" key={campus.id}>
-            <NavLink
-              to={`/campuses/${campus.id}`}
-              onClick={(e) => {props.handleClick(e, campus)}}
-              value={campus.id}>
-              {campus.name}
-            </NavLink>
-          </div>
-        )
-
-      })}
-      <button>
+  renderAddCampusButton() {
+    return (
+      <button className="btn btn-default">
         <NavLink to="/campuses/new-campus">Add Campus</NavLink>
       </button>
-    </div>
-  );
+    )
+  }
+
+  renderRow(campus) {
+
+    return (
+      <div className='col-md-4 text-center' >
+        <NavLink to={`/campuses/${campus.id}`}
+          value={campus.id}
+        >
+          <h3>{campus.name}</h3>
+          <img src={`/${campus.image}`} />
+        </NavLink>
+      </div>
+    )
+  }
+
 }
 
-const mapStateToProps = function(state) {
+const mapStateToProps = function (state) {
   return {
-    campuses: state.campuses
+    campuses: state.campuses,
+    selectedCampus: state.selectedCampus
   }
 }
 
-const mapDispatchToProps = function(dispatch) {
-  return {
-    handleClick: function(evt, campus) {
-      // const campus = state.campuss.find(campus=>campus.id===evt.target.value)
-      const action = chooseCampus(campus);
-      dispatch(action);
-    }
-  }
-}
-
-const CampusesContainer = connect(mapStateToProps, mapDispatchToProps)(Campuses);
+const CampusesContainer = connect(mapStateToProps)(Campuses);
 
 export default CampusesContainer;
 
