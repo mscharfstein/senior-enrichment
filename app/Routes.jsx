@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Route, Switch, Redirect, BrowserRouter as Router } from 'react-router-dom';
+import { Route, Switch, Redirect, BrowserRouter as Router,withRouter } from 'react-router-dom';
 import connect from 'react-redux';
 
 import { fetchStudents, fetchCampuses } from './reducers';
@@ -14,7 +14,7 @@ import NewCampusForm from './components/NewCampusForm';
 import NewStudentForm from './components/NewStudentForm';
 import NavBar from './components/NavBar';
 import Home from './components/Home';
-import Root from './components/Root';
+import Root from './components/Root_v2';
 
 export class Routes extends Component {
 
@@ -44,4 +44,4 @@ export class Routes extends Component {
   }
 }
 
-export default connect(null, null)(Routes);
+export default withRouter(connect(null, null)(Routes));

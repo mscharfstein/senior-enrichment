@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {dropStudentsByCampus} from './students';
 
 // ACTION TYPES
 const GET_CAMPUSES = 'GET_CAMPUSES';
@@ -27,6 +28,7 @@ export function updateCampus (campus) {
   return action;
 }
 
+
 // THUNK CREATORS
 export function fetchCampuses () {
 
@@ -45,9 +47,9 @@ export function deleteCampus (campusId,history) {
   return function thunk (dispatch) {
     return axios.delete(`/api/campuses/${campusId}`)
       .then(() => {
-        const action = dropCampus(campusId);
-        dispatch(action);
-        history.push('/campuses')
+        dispatch(dropCampus(campusId));
+        dispatch(dropStudentsByCampus(campusId));
+        history.push('/campuses');
 
       })
   }

@@ -5,6 +5,7 @@ const GET_STUDENTS = 'GET_STUDENTS';
 const DELETE_STUDENT = 'DELETE_STUDENT';
 const ADD_STUDENT = 'ADD_STUDENT';
 const UPDATE_STUDENT = 'UPDATE_STUDENT';
+const DELETE_STUDENTS_BY_CAMPUSID = 'DELETE_STUDENTS_BY_CAMPUSID';
 
 // ACTION CREATORS
 export function getStudents (students) {
@@ -24,6 +25,11 @@ export function addStudent (student) {
 
 export function updateStudent (student) {
   const action = { type: UPDATE_STUDENT, student };
+  return action;
+}
+
+export function dropStudentsByCampus (campusId) {
+  const action = {type: DELETE_STUDENTS_BY_CAMPUSID, campusId}
   return action;
 }
 
@@ -88,6 +94,11 @@ const reducer = function(state = [], action) {
     case UPDATE_STUDENT:
       const newStudentsArray = state.filter(student=>action.student.id!==student.id);
       return [...newStudentsArray, action.student]
+
+    case DELETE_STUDENTS_BY_CAMPUSID:
+      const studentsInRemCampuses = state.filter(student =>
+        action.campusId!==student.campusId);
+      return studentsInRemCampuses;
 
     default:
       return state

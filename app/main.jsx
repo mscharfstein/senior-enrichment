@@ -5,7 +5,7 @@ import { Provider } from 'react-redux'
 import {BrowserRouter as Router} from 'react-router-dom'
 
 import store from './store'
-import Root from './components/Root_v1'
+import Root from './components/Root'
 //import Routes from './Routes';
 
 render (
