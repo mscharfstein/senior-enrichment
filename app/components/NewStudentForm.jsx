@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import {connect} from 'react-redux';
-import {postStudent} from '../reducers';
+import { connect } from 'react-redux';
+import { postStudent } from '../reducers';
 
 export class NewStudentForm extends Component {
   constructor(props) {
@@ -9,16 +9,18 @@ export class NewStudentForm extends Component {
     this.state = {
       name: '',
       email: '',
-      campusId: ''
+      campusId: '',
+      campusName: 'Choose Campus'
     }
     this.handleChangeName = this.handleChangeName.bind(this);
     this.handleChangeEmail = this.handleChangeEmail.bind(this);
     this.handleChangeCampus = this.handleChangeCampus.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  render () {
+  render() {
     return (
-      <form onSubmit={(e)=>this.props.handleSubmit(e,this.state)}>
+      <form onSubmit={(e) => this.handleSubmit(e, this.state)}>
         <div className="form-group">
           <fieldset>
             <legend>New Student</legend>
@@ -26,6 +28,7 @@ export class NewStudentForm extends Component {
               <label className="col-xs-2 control-label">Name</label>
               <div className="col-xs-10">
                 <input
+                  value={this.state.name}
                   className="form-control"
                   type="text"
                   onChange={this.handleChangeName}
@@ -36,6 +39,7 @@ export class NewStudentForm extends Component {
               <label className="col-xs-2 control-label">Email</label>
               <div className="col-xs-10">
                 <input
+                  value={this.state.email}
                   className="form-control"
                   type="email"
                   onChange={this.handleChangeEmail}
@@ -45,7 +49,7 @@ export class NewStudentForm extends Component {
             <div className="form-group">
               <label className="col-xs-2 control-label">Campus</label>
               <select value={this.state.campusId} onChange={this.handleChangeCampus} className="form-control" name="campus">
-              <option>Choose Campus</option>
+                <option>Choose Campus</option>
                 {this.props.campuses.map(campus => {
                   return (
                     <option key={campus.id} value={campus.id}>{campus.name}
@@ -59,10 +63,10 @@ export class NewStudentForm extends Component {
                 <button
                   type="submit"
                   className="btn btn-success"
-                  disabled = {
+                  disabled={
                     this.state.name.length && this.state.campusId.length ? false : true
                   }
-                  >
+                >
                   Add Student
                   </button>
               </div>
@@ -73,30 +77,35 @@ export class NewStudentForm extends Component {
     )
   }
 
-  handleChangeName (e) {
-    this.setState({name:e.target.value});
+  handleSubmit(e, state) {
+    this.setState({name: '', email: '', campusId: ''})
+    this.props.handleSubmit(e, state);
   }
 
-  handleChangeEmail (e) {
-    this.setState({email:e.target.value});
+  handleChangeName(e) {
+    this.setState({ name: e.target.value });
   }
 
-  handleChangeCampus (e) {
-    this.setState({campusId:e.target.value});
+  handleChangeEmail(e) {
+    this.setState({ email: e.target.value });
+  }
+
+  handleChangeCampus(e) {
+    this.setState({ campusId: e.target.value });
   }
 
 }
 
-const mapStateToProps = function(state) {
+const mapStateToProps = function (state) {
   return {
     students: state.students,
     campuses: state.campuses
   }
 }
 
-const mapDispatchToProps = function(dispatch, ownProps) {
+const mapDispatchToProps = function (dispatch, ownProps) {
   return {
-    handleSubmit: function(evt, state) {
+    handleSubmit: function (evt, state) {
       evt.preventDefault();
       dispatch(postStudent(state, ownProps.history));
     }

@@ -1,7 +1,8 @@
 const router = require('express').Router()
 const db = require('../db')
-const {Student} = require('../db/models');
+const { Student } = require('../db/models');
 
+// /api/students
 router.route('/')
 	// get all students
 	.get((req, res, next) => {
@@ -20,7 +21,7 @@ router.route('/')
 			.catch(next)
 	})
 
-// particular student
+// /api/students/:studentId
 router.route('/:studentId')
 	// get student
 	.get((req, res, next) => {
@@ -32,11 +33,13 @@ router.route('/:studentId')
 	// update student info
 	.put((req, res, next) => {
 		Student.update(
-			{name: req.body.name,
+			{
+				name: req.body.name,
 				email: req.body.email,
-				campusId: req.body.campusId},
-			{ where: {id: req.params.studentId}},
-			{ returning: true}
+				campusId: req.body.campusId
+			},
+			{ where: { id: req.params.studentId } },
+			{ returning: true }
 		)
 			.then(() => Student.findById(req.params.studentId))
 			.then(student => {
@@ -48,10 +51,10 @@ router.route('/:studentId')
 	// delete student
 	.delete((req, res, next) => {
 		Student.destroy(
-			{ where: {id: req.params.studentId}}
+			{ where: { id: req.params.studentId } }
 		)
 			.then(() => res.sendStatus(204))
 			.catch(next)
 	})
 
-  module.exports = router;
+module.exports = router;

@@ -4,8 +4,6 @@ import { connect } from 'react-redux';
 import { deleteStudent, chooseStudent, chooseCampus } from '../reducers'
 
 export function Students(props) {
-  // loop through all of the students and call student component for each
-  console.log('Students that exist are:', props.students);
   return (
     <div >
       <button className="btn btn-default">
@@ -56,9 +54,7 @@ export function Students(props) {
             )
           })}
         </tbody>
-
       </table>
-
     </div>
   );
 }

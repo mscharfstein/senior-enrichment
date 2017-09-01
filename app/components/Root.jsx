@@ -1,9 +1,10 @@
+// import external dependencies
 import React, { Component } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
+
+// import components / store
 import { fetchStudents, fetchCampuses } from '../reducers';
 import store from '../store';
-
-//import Navbar from './Navbar';
 import Campuses from './Campuses';
 import SingleCampus from './SingleCampus';
 import Students from './Students';
@@ -16,19 +17,18 @@ import Home from './Home';
 
 export default class Root extends Component {
 
-  componentDidMount () {
+  componentDidMount() {
     store.dispatch(fetchCampuses());
     store.dispatch(fetchStudents());
   }
 
-  // only render whichever of the routes is selected in the store
-  render () {
+  render() {
     return (
       <div className="container-fluid">
-      <NavBar />
+        <NavBar />
         <main>
           <Switch>
-            <Route exact path="/" component={Home}/>
+            <Route exact path="/" component={Home} />
             <Route exact path="/campuses" component={Campuses} />
             <Route exact path="/campuses/new-campus" component={NewCampusForm} />
             <Route path="/campuses/:campusid" component={SingleCampus} />

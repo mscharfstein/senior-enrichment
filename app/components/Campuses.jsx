@@ -12,11 +12,10 @@ export class Campuses extends Component {
   }
 
   render() {
-    console.log('props when i go back to campuses', this.props);
     return (
       <div>
         <div className="p10">
-        {this.renderAddCampusButton()}
+          {this.renderAddCampusButton()}
         </div>
         <div className="container">
           {this.props.campuses.map(campus => {
@@ -40,7 +39,6 @@ export class Campuses extends Component {
   }
 
   renderRow(campus) {
-
     return (
       <div className='col-md-4 text-center' >
         <NavLink to={`/campuses/${campus.id}`}
@@ -52,7 +50,6 @@ export class Campuses extends Component {
       </div>
     )
   }
-
 }
 
 const mapStateToProps = function (state) {

@@ -1,8 +1,10 @@
 const router = require('express').Router()
 const db = require('../db')
-const {Campus, Student} = require('../db/models');
+const { Campus, Student } = require('../db/models');
 
+// /api/campuses
 router.route('/')
+	// get campuses
 	.get((req, res, next) => {
 		Campus.findAll({})
 			.then((campuses) => res.status(200).send(campuses))
@@ -14,23 +16,25 @@ router.route('/')
 		Campus.create(req.body)
 			.then((campus) => res.status(201).send(campus))
 			.catch(next)
-		})
+	})
 
-// campus with particular id
+// /api/campuses/:campusId
 router.route('/:campusId')
 	// get campus with particular id
 	.get((req, res, next) => {
-	Campus.findById(req.params.campusId)
-		.then((campus) => res.status(200).send(campus))
-		.catch(next)
+		Campus.findById(req.params.campusId)
+			.then((campus) => res.status(200).send(campus))
+			.catch(next)
 	})
 
 	// update campus info
 	.put((req, res, next) => {
 		Campus.update(
-			{name: req.body.name,
-				image: req.body.image},
-			{ where: {id: req.params.campusId}}
+			{
+				name: req.body.name,
+				image: req.body.image
+			},
+			{ where: { id: req.params.campusId } }
 		)
 			.then((res) => {
 				return Campus.findById(req.params.campusId)
@@ -43,28 +47,24 @@ router.route('/:campusId')
 
 	// delete campus
 	.delete((req, res, next) => {
-		// Campus.findById(req.params.campusId)
-		// .then((campus) => campus.destroy())
-		// .then(() => res.sendStatus(204))
-		// .catch(next)
 		Campus.destroy(
-			{ where: {id: req.params.campusId}, individualHooks: true}
+			{ where: { id: req.params.campusId }, individualHooks: true }
 		)
 			.then(() => res.sendStatus(204))
 			.catch(next)
 	})
 
+// /api/campuses/:campusId/students
 router.route('/:campusId/students')
-	// get campus with particular id
 	.get((req, res, next) => {
-	Student.findAll({
-		where: {
-			campusId: req.params.campusId
-		}
-	})
-		.then((students) => res.status(200).send(students))
-		.catch(next)
+		Student.findAll({
+			where: {
+				campusId: req.params.campusId
+			}
+		})
+			.then((students) => res.status(200).send(students))
+			.catch(next)
 	})
 
 
-  module.exports = router;
+module.exports = router;

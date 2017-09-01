@@ -14,9 +14,9 @@ export class SingleStudent extends Component {
       id: '',
       name: '',
       email: '',
-      campus: {name:'',id:''},
+      campus: { name: '', id: '' },
       campusId: '',
-      selectedStudent: {campus:{name:''}}
+      selectedStudent: { campus: { name: '' } }
     }
     this.toggleEdit = this.toggleEdit.bind(this)
     this.updateName = this.updateName.bind(this)
@@ -29,9 +29,9 @@ export class SingleStudent extends Component {
     const studentId = this.props.getStudentId()
 
     axios.get(`/api/students/${studentId}`)
-      .then(res=>res.data)
-      .then(student=>{
-        this.setState({name: student.name, id: student.id, email: student.email, campus: student.campus, selectedStudent: student, campusId: student.campus.id})
+      .then(res => res.data)
+      .then(student => {
+        this.setState({ name: student.name, id: student.id, email: student.email, campus: student.campus, selectedStudent: student, campusId: student.campus.id })
       })
       .catch(() => {
         throw new Error("problem getting student")
@@ -39,7 +39,6 @@ export class SingleStudent extends Component {
   }
 
   render() {
-    // load the info for a given student
     return (
       <div>
         <h3>
@@ -52,62 +51,62 @@ export class SingleStudent extends Component {
         </h3>
         <div>
           <h4>Email: <small>
-        {this.state.beingEdited ?
-            <input
-              value={this.state.email}
-              onChange={this.updateEmail}>
-            </input> :
-            this.state.email}
-            </small>
-        </h4>
+            {this.state.beingEdited ?
+              <input
+                value={this.state.email}
+                onChange={this.updateEmail}>
+              </input> :
+              this.state.email}
+          </small>
+          </h4>
         </div>
         <div>
-        <h4>Campus:
+          <h4>Campus:
         <small>
-        {this.state.beingEdited ?
-          <form className="form-inline">
-            <select className="form-control" name="campus"
-            value={this.state.campusId}
-            onChange={this.updateCampus}>
-              {this.props.campuses.map(campus => {
-                return (
-                  <option key={campus.id} value={campus.id}>{campus.name}
-                  </option>
-                )
-              })}
-            </select>
-            </form>
-            :
+              {this.state.beingEdited ?
+                <form className="form-inline">
+                  <select className="form-control" name="campus"
+                    value={this.state.campusId}
+                    onChange={this.updateCampus}>
+                    {this.props.campuses.map(campus => {
+                      return (
+                        <option key={campus.id} value={campus.id}>{campus.name}
+                        </option>
+                      )
+                    })}
+                  </select>
+                </form>
+                :
 
-            <NavLink
-              to={`/campuses/${this.state.campusId}`}>  {this.state.campus.name}
-            </NavLink>}
+                <NavLink
+                  to={`/campuses/${this.state.campusId}`}>  {this.state.campus.name}
+                </NavLink>}
             </small>
-</h4>
+          </h4>
         </div>
         <div>
 
-        {this.state.beingEdited ?
-          <div><button
-            type="submit"
-            className="btn btn-default"
-            onClick={this.handleSubmit}
-          >Submit
+          {this.state.beingEdited ?
+            <div><button
+              type="submit"
+              className="btn btn-default"
+              onClick={this.handleSubmit}
+            >Submit
           </button>
-          <button
-            type="delete"
-            className="btn btn-default"
-            onClick={(e)=>this.props.handleDelete(e,this.state.id)}
-          >Delete
+              <button
+                type="delete"
+                className="btn btn-default"
+                onClick={(e) => this.props.handleDelete(e, this.state.id)}
+              >Delete
           </button>
-          </div> :
-          <div><button
-            type="edit"
-            className="btn btn-default"
-            onClick={this.toggleEdit}
-          >Edit
+            </div> :
+            <div><button
+              type="edit"
+              className="btn btn-default"
+              onClick={this.toggleEdit}
+            >Edit
           </button>
-        </div>}
+            </div>}
         </div>
       </div>
     );
@@ -118,7 +117,6 @@ export class SingleStudent extends Component {
   }
 
   handleSubmit(e) {
-    console.log('this is the state on submit', this.state)
     this.props.updateOnSubmit(e, this.state);
     this.setState({ beingEdited: false })
   }
@@ -132,7 +130,7 @@ export class SingleStudent extends Component {
   }
 
   updateCampus(e) {
-    const campus = this.props.campuses.filter(campus => +campus.id===+e.target.value)
+    const campus = this.props.campuses.filter(campus => +campus.id === +e.target.value)
     this.setState({ campus: campus[0], campusId: campus[0].id })
   }
 }
@@ -147,13 +145,12 @@ const mapStateToProps = function (state) {
 const mapDispatchToProps = function (dispatch, ownProps) {
   return {
     updateOnSubmit: function (evt, state) {
-      console.log('state on updating', state)
       dispatch(reviseStudent(state));
     },
-    handleDelete: function(evt, studentId) {
+    handleDelete: function (evt, studentId) {
       dispatch(deleteStudent(studentId, ownProps.history));
     },
-    getStudentId: function() {
+    getStudentId: function () {
       return ownProps.match.params.studentid;
     }
   }

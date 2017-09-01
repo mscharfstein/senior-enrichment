@@ -5,7 +5,7 @@ import { chooseStudent, chooseCampus, deleteCampus, reviseCampus } from '../redu
 import axios from 'axios';
 
 export class SingleCampus extends Component {
-  // load the students for a given campus
+
   constructor(props) {
     super(props);
 
@@ -26,9 +26,9 @@ export class SingleCampus extends Component {
   }
 
   componentDidMount() {
-    console.log("in component did mount")
     const campusId = this.props.getCampusId()
 
+    // get campus
     axios.get(`/api/campuses/${campusId}`)
       .then(res => res.data)
       .then(campus => {
@@ -38,6 +38,7 @@ export class SingleCampus extends Component {
         throw new Error("problem getting campus")
       })
 
+    // get students
     axios.get(`/api/campuses/${campusId}/students`)
       .then(res => res.data)
       .then(students => {
@@ -100,23 +101,6 @@ export class SingleCampus extends Component {
     );
   }
 
-  toggleEdit(e) {
-    this.setState({ beingEdited: true })
-  }
-
-  handleSubmit(e) {
-    this.props.updateOnSubmit(e, this.state);
-    this.setState({ beingEdited: false })
-  }
-
-  updateName(e) {
-    this.setState({ name: e.target.value })
-  }
-
-  updateImage(e) {
-    this.setState({ image: e.target.value })
-  }
-
   renderStudents(students) {
     return (
       <div className="studentBox">
@@ -158,6 +142,23 @@ export class SingleCampus extends Component {
         </table>
       </div>
     )
+  }
+
+  toggleEdit(e) {
+    this.setState({ beingEdited: true })
+  }
+
+  handleSubmit(e) {
+    this.props.updateOnSubmit(e, this.state);
+    this.setState({ beingEdited: false })
+  }
+
+  updateName(e) {
+    this.setState({ name: e.target.value })
+  }
+
+  updateImage(e) {
+    this.setState({ image: e.target.value })
   }
 }
 

@@ -3,7 +3,6 @@ const Sequelize = require('sequelize')
 const db = require('../index.js')
 const Campus = require('./campus');
 
-
 const Student = db.define('student', {
   name: {
     type: Sequelize.STRING,
@@ -15,10 +14,10 @@ const Student = db.define('student', {
       isEmail: true
     }
   }
-},{
-  defaultScope: {
-    include: [{model: Campus}]
-  }
-})
+}, {
+    defaultScope: {
+      include: [{ model: Campus }]
+    }
+  })
 
 module.exports = Student;
